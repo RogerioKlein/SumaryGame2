@@ -11,7 +11,7 @@ import java.util.TreeMap;
 
 /**
  *
- * @author roger
+ * @author rogerio, carlos
  */
 public class SumarioJogos {
 
