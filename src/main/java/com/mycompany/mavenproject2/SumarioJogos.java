@@ -5,6 +5,7 @@
  */
 package com.mycompany.mavenproject2;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -47,6 +48,7 @@ public class SumarioJogos {
     public static void main(String[] args) {
 
         Map<String, Info> map = new TreeMap<String, Info>();
+        Map<String, Integer> yearAction = new HashMap<>();
 
         SimpleReader file = new SimpleReader("C:\\Users\\roger\\Documents\\NetBeansProjects\\mavenproject2\\src\\main\\java\\com\\mycompany\\mavenproject2\\game-reviews.csv");
 
@@ -58,6 +60,7 @@ public class SumarioJogos {
             String title = col[0];
             String scorePhrase = col[2];
             double score = Double.parseDouble(col[3]);
+            String genre = col[4];
             String year = col[6];
 
             Info i;
@@ -84,6 +87,13 @@ public class SumarioJogos {
                     i.worstTitle = title;
                 }
                 map.put(year, i);
+                if (genre.contains("Action")) {
+                    Integer genreCount = yearAction.get(year);
+                    if (genreCount == null) {
+                        genreCount = 0;
+                    }
+                    yearAction.put(year, ++genreCount);
+                }
             }
 
             line = file.readLine();
@@ -94,5 +104,17 @@ public class SumarioJogos {
         for (String w : map.keySet()) {
             System.out.println(w + ": " + map.get(w));
         }
+        
+        Integer maxGenre = null;
+        String actionGenre = "";
+
+        for (Map.Entry<String, Integer> genreEntry : yearAction.entrySet()) {
+            if (maxGenre == null || maxGenre < genreEntry.getValue()) {
+                maxGenre = genreEntry.getValue();
+                actionGenre = genreEntry.getKey();
+            }
+        }
+
+        System.out.println("The year with the most games released under the 'Action' genre is: " + actionGenre + " (" + maxGenre + " games)");
     }
 }
