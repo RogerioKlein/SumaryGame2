@@ -16,11 +16,31 @@ public class SumarioJogos {
 
     private static class Info {
 
+        public int reviwes;
+        public double totalScore;
+        public int countMediocre;
         public String bestTitle;
         public String worstTitle;
-        public int reviwes;
-        public int scoreMediocre;
-        public int totalScore;
+        public double bestScore;
+        public double worstScore;
+
+        public Info(int reviwes, double totalScore, int countMediocre, String bestTitle, String worstTitle, double bestScore, double worstScore) {
+            this.reviwes = reviwes;
+            this.totalScore = totalScore;
+            this.countMediocre = countMediocre;
+            this.bestTitle = bestTitle;
+            this.worstTitle = worstTitle;
+            this.bestScore = bestScore;
+            this.worstScore = worstScore;
+        }
+
+        @Override
+        public String toString() {
+            return "Reviews: " + reviwes + ",\nMediocre Reviews %: %.2f%%" + ((double) countMediocre / reviwes * 100)
+                    + ",\nAverage Score: %.2f%%" + (totalScore / (double) reviwes)
+                    + ",\nBest Scored Title: " + bestScore + "p., " + bestTitle
+                    + ",\nWorst Scored Title: " + worstScore + "p., " + worstTitle + "\n";
+        }
 
     }
 
@@ -37,18 +57,38 @@ public class SumarioJogos {
             String[] col = line.split(";");
             String title = col[0];
             String scorePhrase = col[2];
-            Double score = Double.parseDouble(col[3]);
+            double score = Double.parseDouble(col[3]);
             String year = col[6];
 
+            Info i;
             if (!map.containsKey(year)) { // contagem
-                Info i = new Info();
+                int med = 0;
+                if (scorePhrase.equals("Mediocre")) {
+                    med++;
+                }
+                i = new Info(1, score, med, title, title, score, score);
                 map.put(year, i);
             } else {
-                map.put(year, (map.get(year).reviwes + 1));
+                i = map.get(year);
+                i.reviwes++;
+                i.totalScore = i.totalScore + score;
+                if (scorePhrase.equals("Mediocre")) {
+                    i.countMediocre++;
+                }
+                if (i.bestScore < score) {
+                    i.bestScore = score;
+                    i.bestTitle = title;
+                }
+                if (i.worstScore > score) {
+                    i.worstScore = score;
+                    i.worstTitle = title;
+                }
+                map.put(year, i);
             }
 
             line = file.readLine();
         }
+
         file.close();
 
         for (String w : map.keySet()) {
